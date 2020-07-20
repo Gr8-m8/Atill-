@@ -50,10 +50,7 @@ io.on('connection', function (socket) {
 
 	socket.on('reqTime', function (data) {
 		console.log('reqTime--- [' + ID + ']');
-		GameManager.TimerSet(data);
-		while (GameManager.Time >= 0) {
-			io.emit('recTime', GameManager.Time);
-		}
+		io.emit('recTime', (parseInt(data[0]) + parseInt(data[1])));
 	});
 
 	
@@ -214,34 +211,9 @@ var GameManager =
 		Die.Q(['15', '15', '30', '30', '+1', '-1'])
 	],
 
-	Time: 0,
-
-	//sets a timer and returns time
-	TimerSet: function (data) {
-		//sets time
-		this.Time = data;
-
-		//set an interval on 1 second
-		var timerEvent = setInterval(function ()
-		{
-			//decrese time
-			GameManager.Time--;
-
-			//stop time once time has run out
-			if (GameManager.Time <= 0) {
-				clearInterval(timerEvent);
-			}
-
-			console.log(GameManager.Time);
-			//return time
-			return GameManager.Time;
-
-		}, 1000);
-	},
-
 	//returns a question and a value from the type die
 	GetDice: function () {
-		return [this.Cards.splice(Math.random() * this.Cards.length, 1), this.Dice[1].Roll()];
+		return [this.Cards.splice(Math.random() * this.Cards.length, 1), this.Dice[1].Roll(), 1 + Math.floor(Math.random() * 6)];
 	},
 
 	//returns a board with index

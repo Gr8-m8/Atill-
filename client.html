@@ -166,13 +166,11 @@
                     <tr>
                         <td id="question" style="border: none; height:8vh; min-width:16vmax; width:0%;"></td>
                         <td style="border:none;">
-                            <div class="dice" id="displayTime"></div>
+                            <button class="dice" id="displayTime" style="cursor:pointer;"></div>
                         </td>
 
                     </tr>
                 </table>
-                <!--<button class="timerStartButton" onclick="gm.timer.TakeTime(parseInt(document.getElementById('diceType').innerHTML))">TIME</button>-->
-
             </td>
         </tr>
     </table>
@@ -185,6 +183,12 @@
         var displayBoard = document.getElementById("board");
         var displayName = document.getElementById("displayName");
         var displayTime = document.getElementById("displayTime");
+
+        var displayQuestion = document.getElementById("question");
+
+        var displayDiceNumber = document.getElementById("diceNumber");
+        var displayDiceType = document.getElementById("diceType");
+        
 
         //Object with client request functions
         var req =
@@ -249,25 +253,27 @@
                 //console.log('rec.Roll', rollValues);
 
                 //animate dice
-                document.getElementById("diceNumber").classList.add("diceroll");
-                document.getElementById("diceType").classList.add("diceroll");
+                displayDiceNumber.classList.add("diceroll");
+                displayDiceType.classList.add("diceroll");
 
 
                 setTimeout(function () {
                     //prime dice for next animation
-                    document.getElementById("diceNumber").classList.remove("diceroll");
-                    document.getElementById("diceType").classList.remove("diceroll");
+                    displayDiceNumber.classList.remove("diceroll");
+                    displayDiceType.classList.remove("diceroll");
 
                     //replaces the value of the question index die with a random number (depricated functional useage)
-                    document.getElementById("diceNumber").innerHTML = 1 + Math.floor(Math.random() * 6);
+                    displayDiceNumber.innerHTML = rollValues[2];
                     //replaces the value of the type die with the value recived
-                    document.getElementById("diceType").innerHTML = rollValues[1];
+                    displayDiceType.innerHTML = rollValues[1];
 
                     //replaces the question with the question recived
-                    document.getElementById("question").innerHTML = rollValues[0];
+                    displayQuestion.innerHTML = rollValues[0];
+                    displayBoard.innerHTML = "<span style='color:white; font-size: 233%;'>" + rollValues[0] + "</span>";
 
                     //replaces the time with the value of the type
-                    document.getElementById("displayTime").innerHTML = document.getElementById("diceType").innerHTML;
+                    //document.getElementById("displayTime").innerHTML = document.getElementById("diceType").innerHTML;
+                    req.Time([rollValues[1], 3 + displayQuestion.innerHTML.split(' ').length]);
                 }, 250);
             },
 
@@ -282,6 +288,7 @@
             //recive time
             Time: function (data) {
                 console.log(data);
+                Timer.SetTime(data);
             }
         }
 
@@ -310,6 +317,34 @@
 
         //request board (initial client update)
         req.Board(0);
+
+        var timerEvent = undefined;
+
+        var Timer = {
+            Time: 0,
+            TimerEvent: function(){
+            
+                timerEvent = setInterval(() => {
+                    Timer.Time--;
+
+                    if (Timer.Time <= 0){
+                        clearInterval(timerEvent);
+                    }
+
+                    if (Timer.Time == displayDiceType.innerHTML){
+                        req.Board(0);
+                    }
+
+                    displayTime.innerHTML = Timer.Time;
+                }, 1000);
+            },
+
+            SetTime: function(timeSet){
+                this.Time = timeSet;
+                clearInterval(timerEvent);
+                this.TimerEvent();
+            }
+        }
     </script>
 </body>
 </html>
