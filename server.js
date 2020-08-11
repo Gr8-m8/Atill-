@@ -106,7 +106,7 @@ var Board =
 					}
 
 					htmlOut +=
-						"<td id='x" + x + "' class='tile" + tileStatus + "' onclick='req.Tile([parseInt(document.getElementById(\"displayName\").innerHTML -1)," + y + "," + x + "])'>" + this.Tiles[y][x].Icon + "</td>";
+						"<td><input type='button' id='x" + x + "' class='tile" + tileStatus + "' onclick='req.Tile([parseInt(document.getElementById(\"displayName\").innerHTML -1)," + y + "," + x + "])' value='" + this.Tiles[y][x].Icon + "'/></td>";
 
 				}
 
@@ -119,38 +119,10 @@ var Board =
 		return newBoard;
 	},
 
-	Tiles: [
-		[Tile.Q('A'), Tile.Q('B'), Tile.Q('C'), Tile.Q('D'), Tile.Q('E')],
-		[Tile.Q('F'), Tile.Q('G'), Tile.Q('H'), Tile.Q('I'), Tile.Q('J')],
-		[Tile.Q('K'), Tile.Q('L'), Tile.Q('M'), Tile.Q('N'), Tile.Q('O')],
-		[Tile.Q('P'), Tile.Q('Q'), Tile.Q('R'), Tile.Q('S'), Tile.Q('T')],
-		[Tile.Q('U'), Tile.Q('V/W'), Tile.Q('X/Y'), Tile.Q('Z/ao'), Tile.Q('ae/oe')]
-	],
+	Tiles: [],
 
 	//returns the board as html (used by clients)
-	Render: function () {
-		var htmlOut = "";
-
-		for (var y = 0; y < 5; y++) {
-			htmlOut +=
-				"<tr id='y" + y + "'>";
-			for (var x = 0; x < 5; x++) {
-
-				var tileStatus = "";
-				if (this.Tiles[y][x].Complete) {
-					tileStatus = " tilecomplete";
-				}
-
-				htmlOut +=
-					"<td id='x" + x + "' class='tile" + tileStatus + "' onclick='req.Tile([parseInt(document.getElementById(\"displayName\").innerHTML -1)," + y + "," + x + "])'>" + this.Tiles[y][x].Icon + "</td>";
-
-			}
-
-			htmlOut += "</tr>";
-		}
-
-		return htmlOut;
-	}
+	Render: function () {}
 };
 
 //Object with functions for pregame setup board
@@ -164,7 +136,7 @@ var BoardSetup = {
 
 	//returns the setup board as html (used by cluents)
 	Render: function () {
-		var htmlOut = "<tr><th>Amount of Players</th ></tr ><tr><td><input id='req.GameBN' type='number' /></td><td><button onclick='req.Game(document.getElementById(\"req.GameBN\").value)'>Confirm</button></td></tr>";
+		var htmlOut = "<tr><th style='font-size:233%; color:white;'>Amount of Players</th ></tr ><tr><td><input id='req.GameBN' type='number' class='dice' style='text-align:center' /><button class='dice' style='background-color:green' onclick='req.Game(document.getElementById(\"req.GameBN\").value)'> &check; </button></td></tr>";
 
 		return htmlOut;
 	}

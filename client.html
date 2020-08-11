@@ -19,17 +19,15 @@
             margin-left: auto;
             margin-right: auto;
             background-color: darkslategrey;
+            min-width: 83.6vmin;
+            min-height: 82.6vmin;
             padding: 1vmin;
             border-radius: 3vmin;
         }
 
         #question {
             background-color: darkslategrey;
-            //padding: 1vmin;
-            //border-radius: 3vmin;
             color: white;
-            //border: 0.33vh solid black; 
-            //width:50%;
         }
 
         .tile {
@@ -165,8 +163,8 @@
                 <table>
                     <tr>
                         <td id="question" style="border: none; height:8vh; min-width:16vmax; width:0%;"></td>
-                        <td style="border:none;">
-                            <button class="dice" id="displayTime" style="cursor:pointer;"></div>
+                        <td style="border:none; width: 8vmin; cursor: default;" class="dice" id="displayTime" style="cursor:pointer;">
+
                         </td>
 
                     </tr>
@@ -252,6 +250,7 @@
             Roll: function (rollValues) {
                 //console.log('rec.Roll', rollValues);
 
+
                 //animate dice
                 displayDiceNumber.classList.add("diceroll");
                 displayDiceType.classList.add("diceroll");
@@ -262,18 +261,29 @@
                     displayDiceNumber.classList.remove("diceroll");
                     displayDiceType.classList.remove("diceroll");
 
-                    //replaces the value of the question index die with a random number (depricated functional useage)
+                    //replaces the value of the question index die with a random number (depricated functional use)
                     displayDiceNumber.innerHTML = rollValues[2];
+                    
                     //replaces the value of the type die with the value recived
                     displayDiceType.innerHTML = rollValues[1];
 
-                    //replaces the question with the question recived
-                    displayQuestion.innerHTML = rollValues[0];
-                    displayBoard.innerHTML = "<span style='color:white; font-size: 233%;'>" + rollValues[0] + "</span>";
+                    switch (rollValues[1]){
+                        default:
+                            //replaces the question with the question recived
+                            displayQuestion.innerHTML = rollValues[0];
+                            displayBoard.innerHTML = "<span style='color:white; font-size: 233%;'>" + rollValues[0] + "</span>";
 
-                    //replaces the time with the value of the type
-                    //document.getElementById("displayTime").innerHTML = document.getElementById("diceType").innerHTML;
-                    req.Time([rollValues[1], 3 + displayQuestion.innerHTML.split(' ').length]);
+                            //request time depending on the lenght of the question
+                            Timer.SetTime(parseInt(rollValues[1]) + 2 + Math.round(displayQuestion.innerHTML.length/10));
+                            //req.Time([rollValues[1], 2 + (displayQuestion.innerHTML.length/10)]);
+                            break;
+
+                        case "-1":
+                        case "+1":
+                            displayQuestion.innerHTML = rollValues[1];
+                            Timer.SetTime(1);
+                            break;
+                    }
                 }, 250);
             },
 
@@ -317,32 +327,46 @@
 
         //request board (initial client update)
         req.Board(0);
-
+        
+        //accsessable definition of the timer event
         var timerEvent = undefined;
 
+        //Object with Timer functions
         var Timer = {
             Time: 0,
-            TimerEvent: function(){
+
             
+            TimerEvent: function(){
+                
+                
+            },
+
+            //function to set timer
+            SetTime: function(timeSet){
+                //set time
+                this.Time = timeSet;
+
+                //clear timer event
+                clearInterval(timerEvent);
+                
+                //defines new timer event, with a 1 ssecont interval
                 timerEvent = setInterval(() => {
+                    //decreses time
                     Timer.Time--;
 
+                    //stops timer
                     if (Timer.Time <= 0){
                         clearInterval(timerEvent);
                     }
 
-                    if (Timer.Time == displayDiceType.innerHTML){
+                    //request board after the question time has expired
+                    if (Timer.Time == displayDiceType.innerHTML || displayDiceType.innerHTML == "-1" || displayDiceType.innerHTML == "+1"){
                         req.Board(0);
                     }
 
+                    //display time
                     displayTime.innerHTML = Timer.Time;
                 }, 1000);
-            },
-
-            SetTime: function(timeSet){
-                this.Time = timeSet;
-                clearInterval(timerEvent);
-                this.TimerEvent();
             }
         }
     </script>
